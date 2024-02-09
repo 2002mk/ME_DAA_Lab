@@ -1,89 +1,63 @@
-class BankerAlgorithm:
-    def __init__(self, max_resources):
-        self.max_resources = max_resources
-        self.current_resources = max_resources.copy()
-        self.allocated = []
-        self.needed = []
-        self.available = max_resources.copy()
-        self.processes = len(max_resources)
-        self.finished = [False] * self.processes
+def main():
+    # Get input from the user
+    n = int(input("Enter the number of processes: "))  # Number of processes
+    m = int(input("Enter the number of resource types: "))  # Number of resource types
 
-    def add_process(self, allocated_resources, max_needed_resources):
-        self.allocated.append(allocated_resources)
-        self.needed.append(max_needed_resources)
-        self.available = [self.available[i] - allocated_resources[i] for i in range(len(allocated_resources))]
+    # Allocation Matrix
+    print("Allocation matrix")
+    alloc = []
+    for i in range(n):
+        alloc.append(list(map(int, input(f"Enter allocation for Process {i}: ").split())))
 
-    def is_safe_state(self, process_sequence=None):
-        if process_sequence is None:
-            process_sequence = []
-        work = self.available.copy()
-        finish = self.finished.copy()
+    # MAX Matrix
+    print("MAX matrix")
+    max = []
+    for i in range(n):
+        max.append(list(map(int, input(f"Enter MAX for Process {i}: ").split())))
 
-        while True:
-            found = False
-            for i in range(self.processes):
-                if not finish[i] and all(self.needed[i][j] <= work[j] for j in range(len(work))):
-                    work = [work[j] + self.allocated[i][j] for j in range(len(work))]
-                    finish[i] = True
-                    process_sequence.append(i)
-                    found = True
+    # Available Resources
+    avail = list(map(int, input("Enter the available resources: ").split()))
 
-            if not found:
-                break
+    # Initialization
+    f = [0] * n
+    ans = [0] * n
+    ind = 0
+    for k in range(n):
+        f[k] = 0
 
-        return all(finish), process_sequence
+    need = [[0 for i in range(m)] for i in range(n)]
+    for i in range(n):
+        for j in range(m):
+            need[i][j] = max[i][j] - alloc[i][j]
 
-    def request_resources(self, process_id, resources_requested):
-        if any(resources_requested[i] > self.needed[process_id][i] for i in range(len(resources_requested))):
-            print("Error: Requested resources exceed maximum needed resources")
-            return
+    # Applying Banker's Algorithm
+    for k in range(n):
+        for i in range(n):
+            if f[i] == 0:
+                flag = 0
+                for j in range(m):
+                    if need[i][j] > avail[j]:
+                        flag = 1
+                        break
 
-        if any(resources_requested[i] > self.available[i] for i in range(len(resources_requested))):
-            print("Error: Insufficient available resources to fulfill request")
-            return
+                if flag == 0:
+                    ans[ind] = i
+                    ind += 1
+                    for y in range(m):
+                        avail[y] += alloc[i][y]
+                    f[i] = 1
 
-        self.available = [self.available[i] - resources_requested[i] for i in range(len(resources_requested))]
-        self.allocated[process_id] = [self.allocated[process_id][i] + resources_requested[i] for i in range(len(resources_requested))]
-        self.needed[process_id] = [self.needed[process_id][i] - resources_requested[i] for i in range(len(resources_requested))]
+    # Determine whether the system is safe or unsafe
+    safe = all(f)
+    if safe:
+        print("The system is in a safe state.")
+        print("The safe sequence:")
+        for i in range(n - 1):
+            print("P", ans[i], " -> ", sep="", end="")
+        print("P", ans[n - 1], sep="")
+    else:
+        print("The system is in an unsafe state.")
 
-        safe, _ = self.is_safe_state()
-        if safe:
-            print("Resources allocated successfully. System in safe state.")
-        else:
-            print("Resources allocated. System in unsafe state. Rollback changes.")
-            self.available = [self.available[i] + resources_requested[i] for i in range(len(resources_requested))]
-            self.allocated[process_id] = [self.allocated[process_id][i] - resources_requested[i] for i in range(len(resources_requested))]
-            self.needed[process_id] = [self.needed[process_id][i] + resources_requested[i] for i in range(len(resources_requested))]
 
-    def release_resources(self, process_id, resources_released):
-        if any(resources_released[i] > self.allocated[process_id][i] for i in range(len(resources_released))):
-            print("Error: Released resources exceed allocated resources")
-            return
-
-        self.available = [self.available[i] + resources_released[i] for i in range(len(resources_released))]
-        self.allocated[process_id] = [self.allocated[process_id][i] - resources_released[i] for i in range(len(resources_released))]
-        self.needed[process_id] = [self.needed[process_id][i] + resources_released[i] for i in range(len(resources_released))]
-
-    def display_state(self):
-        print("Maximum resources:", self.max_resources)
-        print("Allocated resources:", self.allocated)
-        print("Needed resources:", self.needed)
-        print("Available resources:", self.available)
-
-# Example usage:
-max_resources = [10, 5, 7]
-banker = BankerAlgorithm(max_resources)
-
-banker.add_process([0, 1, 0], [7, 5, 3])
-banker.add_process([2, 0, 0], [3, 2, 2])
-banker.add_process([3, 0, 2], [9, 0, 2])
-banker.add_process([2, 1, 1], [2, 2, 2])
-banker.add_process([0, 0, 2], [4, 3, 3])
-
-banker.display_state()
-
-banker.request_resources(1, [1, 0, 2])
-banker.display_state()
-
-banker.release_resources(3, [1, 0, 1])
-banker.display_state()
+if __name__ == "__main__":
+    main()
