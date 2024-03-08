@@ -78,6 +78,6 @@ if __name__ == "__main__":
 
     ford_fulkerson = FordFulkerson(multistaged_graph)
     source= int(input("enter the source:"))
-    sink=int(input("Enter the sink"))
+    sink=int(input("Enter the sink:"))
     max_flow = ford_fulkerson.ford_fulkerson(source, sink)
     print("Maximum flow:", max_flow)
