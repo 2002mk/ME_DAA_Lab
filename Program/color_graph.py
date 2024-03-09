@@ -52,12 +52,17 @@ class Graph:
         return True
 
 if __name__ == "__main__":
-    # Example usage:
-    g = Graph(4)
-    g.add_edge(0, 1)
-    g.add_edge(0, 2)
-    g.add_edge(1, 2)
-    g.add_edge(1, 3)
-    g.add_edge(2, 3)
+    # Get input from the user
+    vertices = int(input("Enter the number of vertices: "))
+    edges = int(input("Enter the number of edges: "))
+
+    g = Graph(vertices)
+
+    # Get edges from the user
+    print("Enter the edges (vertex1 vertex2):")
+    for _ in range(edges):
+        u, v = map(int, input().split())
+        g.add_edge(u, v)
+
     m = 3  # Number of colors
     g.graph_coloring(m)
