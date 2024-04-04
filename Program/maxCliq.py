@@ -1,5 +1,7 @@
 from itertools import combinations
 from pulp import LpMaximize, LpProblem, LpVariable, lpSum
+import networkx as nx
+import matplotlib.pyplot as plt
 
 class MaximumClique:
     def __init__(self, graph):
@@ -21,17 +23,30 @@ class MaximumClique:
     def get_solution(self):
         return [i for i in self.nodes if self.x[i].value() == 1]
 
-# Example usage:
 if __name__ == "__main__":
-    # Example graph represented as an adjacency matrix
-    graph = [
-        [0, 1, 1, 1],
-        [1, 0, 1, 1],
-        [1, 1, 0, 1],
-        [1, 1, 1, 0]
-    ]
+    # Get input from the user
+    num_nodes = int(input("Enter the number of nodes: "))
+    print("Enter the adjacency matrix (0 or 1) for the graph:")
+    graph = [[int(x) for x in input().split()] for _ in range(num_nodes)]
 
+    # Solve the maximum clique problem
     maximum_clique_solver = MaximumClique(graph)
     maximum_clique_solver.solve()
     max_clique = maximum_clique_solver.get_solution()
     print("Maximum clique:", max_clique)
+
+    # Create a NetworkX graph for visualization
+    G = nx.Graph()
+    G.add_nodes_from(range(num_nodes))
+    for i in range(num_nodes):
+        for j in range(i + 1, num_nodes):
+            if graph[i][j] == 1:
+                G.add_edge(i, j)
+
+    # Color the nodes in the maximum clique differently
+    node_colors = ['skyblue' if node not in max_clique else 'orange' for node in G.nodes()]
+
+    # Plot the graph
+    nx.draw(G, with_labels=True, node_color=node_colors, node_size=800, font_size=12, font_weight='bold')
+    plt.title("Input Graph with Maximum Clique Highlighted")
+    plt.show()
