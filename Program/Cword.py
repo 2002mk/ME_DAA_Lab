@@ -34,8 +34,29 @@ class CrosswordCSP:
                 self.grid[row + i][col] = letter
 
     def solve(self):
-        # Implement minimax algorithm with backtracking here
-        pass
+        self.backtrack(0)
+
+    def backtrack(self, index):
+        if index == len(self.words):
+            return True
+
+        word, row, col, direction = self.words[index]
+        if direction == 'across':
+            for c in range(self.grid_size - len(word) + 1):
+                if self.is_valid_placement(word, row, c, direction):
+                    self.place_word(word, row, c, direction)
+                    if self.backtrack(index + 1):
+                        return True
+                    self.place_word(word, row, c, direction)  # Backtrack
+            return False
+        elif direction == 'down':
+            for r in range(self.grid_size - len(word) + 1):
+                if self.is_valid_placement(word, r, col, direction):
+                    self.place_word(word, r, col, direction)
+                    if self.backtrack(index + 1):
+                        return True
+                    self.place_word(word, r, col, direction)  # Backtrack
+            return False
 
     def print_solution(self):
         for row in self.grid:
