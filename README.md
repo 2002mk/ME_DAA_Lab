@@ -1,2 +1,2 @@
 # ME_DAA_Lab
-lab program and recod
+This is the repository that contains all experiments and work done at the DAA Lab.
