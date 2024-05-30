@@ -1,28 +1,33 @@
-import random
-def Ran_quick_sort(arr):
-    n=len(arr)
-    if n<=1:
-        return arr
-    pivot = random.choice(arr)
-    left = []
-    right = []
-    pivot_List=[]
-    for i in arr:
-        if(i < pivot):
-            left.append(i)
-        elif i<pivot:
-            right.append(i)
-        else:
-            pivot_List.append(i)
-    return Ran_quick_sort(left) +pivot_List+ Ran_quick_sort(right)
+def proc_in(p,r):
+    pr=list()
+    for i in range(p):
+            aloc=list(map(int, input(f"Enter the aloccation processor{i} for {r}with space between:").split()))
+            pr.append(aloc)
+    return pr
 
+def max_aloc(p,r):
+    m_pr=list()
+    for i in range(p):
+            aloc=list(map(int, input(f"Enter the aloccation processor{i} for {r}with space between:").split()))
+            m_pr.append(aloc)
+    return m_pr
 
+def need_rec(pr,MaxAlo):
+      need_res=[]
+      for i in range(int(len(pr))):
+            for j in range(int(len(i))):
+                  need=list(pr[i][j]+MaxAlo[i][j])
+            need_res.append(need)
+      return need_res
 
-n=int(input("Enter the number of elements in array:"))
-arr=[]
-for i in range(0,n):
-    a=int(input("Enter the element or array:"))
-    arr.append(a)
-print("The original Array or List:\n",arr)
-r=Ran_quick_sort(arr)
-print("Arral after shorted",r)
+p=int(input("Enter the number of processor:"))
+r=int(input("Enter the number of resorces:"))
+pr=proc_in(p,r)
+print(pr)
+print("Maximum alocation matrix:")
+MaxAlo=max_aloc(p,r)
+print(MaxAlo)
+av_re=list(map(int, input("Enter the available resource:").split()))
+print(av_re)
+need_res=sum(pr,MaxAlo)
+print("the needed Resorc:\n",need_res)
