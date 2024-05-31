@@ -13,4 +13,5 @@ for i in range(n):
         if vertix[i][j]!=0:
             adj_ver.append(j)
         adj[i]={i:adj_ver}
+        adj_ver=[]
 print(adj)
